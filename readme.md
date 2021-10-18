@@ -12,14 +12,19 @@ const trials = 100 // the number of trials
 const options = null // optional, se below for properties.
 ```
 
-### Code in JS-file my-benchmark.js:
+Code in JS-file my-benchmark.js:
+
 
 ```js
-histogram(f, args, trials, options); // displays histogram
+histogram(f, args); // default usage, displays histogram in new browser window
 
+histogram(f, args, trials, options=options); // with trials and options as arguments
+
+```
 or
 
-const result = benchmark(f, args, trials, options); // returns result for analysis
+```js
+const result = benchmark(f, args, trials, options); // returns result for further analysis
 
 ```
 
@@ -34,7 +39,7 @@ node my-benchmark.js
 Format and default options:
 
 ```js
-{
+const options = {
     runs: 10, 
     cutoff: 200,
     range: [0, 200],
@@ -45,11 +50,11 @@ Format and default options:
 
 Description of options:
 
-runs == number of evaluations
-cutoff == skip outliers above this value
-range == x-axis range displayed in chart
-histnorm == what to display on y-axis ['count'|'probability'] 
-binsize == size of x-bins in chart
+runs: number of evaluations
+cutoff: skip outliers above this value
+range: x-axis range displayed in chart
+histnorm: what to display on y-axis ['count'|'probability'] 
+binsize: size of x-bins in chart
 
 ## Installation
 
@@ -62,7 +67,7 @@ npm install ../dir/to/benchmark-utils
 
 ## Features
 
-Run this from node to show a simple benchmark of javascript functions with stats displayed as histogram in a browser.
+Run this with node to get a simple benchmark of a javascript function with stats displayed as a histogram in a browser window.
 
 ## Tests
 
