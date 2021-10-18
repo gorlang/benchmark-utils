@@ -5,7 +5,7 @@
 const { benchmark, histogram } = require('benchmark-utils'); // from Node
 const { benchmark, histogram  } = require('./benchmark-utils.js'); // from file
 
-const f = your_function // 
+const f = your_function // function name wihtout ()
 const args = [a, b, etc.] // Array with the args for your your_function
 
 const trials = 100 // the number of trials
@@ -18,7 +18,7 @@ Code in JS-file my-benchmark.js:
 ```js
 histogram(f, args); // default usage, displays histogram in new browser window
 
-histogram(f, args, trials, options=options); // with trials and options as arguments
+histogram(f, args, trials, options); // with trials and options as arguments
 
 ```
 or
@@ -36,25 +36,17 @@ node my-benchmark.js
 
 ### Options
 
-Format and default options:
+Default options:
 
 ```js
 const options = {
-    runs: 10, 
-    cutoff: 200,
-    range: [0, 200],
-    histnorm: 'count',
-    binsize: 5,
+    runs: 10, // number of evaluations
+    cutoff: 200, // skip outliers above this value
+    range: [0, 200], // x-axis range displayed in chart
+    histnorm: 'count', // what to display on y-axis ['count'|'probability'] 
+    binsize: 5, // width of x-bins in chart
   }
 ```
-
-Description of options:
-
-runs: number of evaluations
-cutoff: skip outliers above this value
-range: x-axis range displayed in chart
-histnorm: what to display on y-axis ['count'|'probability'] 
-binsize: size of x-bins in chart
 
 ## Installation
 
