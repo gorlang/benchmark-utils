@@ -1,0 +1,21 @@
+{
+  "name": "benchmark-utils",
+  "version": "1.0.0",
+  "description": "simple benchmarking of javascript functions",
+  "main": "benchmark-utils.js",
+  "scripts": {
+    "test": "mocha --reporter list",
+    "pretest": "eslint --ignore-path .gitignore ."
+  },
+  "keywords": [
+    "benchmarking",
+    "utils"
+  ],
+  "author": "gorlang",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.0.1",
+    "eslint-config-strongloop": "^2.1.0",
+    "mocha": "^9.1.3"
+  }
+}
