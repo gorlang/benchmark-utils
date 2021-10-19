@@ -1,4 +1,5 @@
 const plot = require('nodeplotlib');
+const stats = require('simple-statistics')
 
 const benchmark = (function(){
 
@@ -10,10 +11,6 @@ function btime(f, args, trial_i) {
   	const hrTimeEnd = process.hrtime();
   	const end = hrTimeEnd[0] * 1000000 + parseInt(hrTimeEnd[1] / 1000);
 	return {res: (trial_i == 0 ? res : null), t: Math.round(end - start), unit: "uS"};
-}
-
-function mean(ary) {
-  return Math.round(ary.reduce((a,b)=> a + b)/ary.length);
 }
 
 function decorate(str, values) {
@@ -41,6 +38,14 @@ function getOptions() {
   }
 }
 
+function setGetOptions(opts) {
+	const options = getOptions();
+	for (const property in opts) {
+ 		options[property] = opts[property];
+	}
+	return options;
+}
+
 function getLayout(title) {
   return {
     bargap: 0.01,
@@ -65,7 +70,7 @@ exports.benchmark = function benchmark(f, args=null, trials=1) {
 
 exports.histogram = function histogram(f, args, trials=100, opts=null) {
 
-	const options = (opts == null ? getOptions() : opts);
+	const options = (opts == null ? getOptions() : setGetOptions(opts));
 	const output = [];
 
 	for(var i = 1; i <= options.runs; i++) {
@@ -75,11 +80,12 @@ exports.histogram = function histogram(f, args, trials=100, opts=null) {
 	}
 
 	const samples = output.flat();
+	const sample_cut = Math.round(samples.length/(options.runs * trials) * 100);
 	const plots = [];
 	plots.push(
 	  {x: samples, 
 	  type: 'histogram',
-	  histnorm: options.histnorm, // probability 
+	  histnorm: options.histnorm,
 	  xbins: {end: options.range[1],
 	          size: options.binsize, 
 	          start: options.range[0]
@@ -87,10 +93,13 @@ exports.histogram = function histogram(f, args, trials=100, opts=null) {
 	});
 
 	const title = decorate(
-	"Benchmark: x̄ = #mean μS (#samples samples < #cutoff μS, with #runs evaluations)", 
-	[mean(samples), 
+	"x̄=#mean μS (M=#median μS), #samples samples (#sample_cut %) < #cutoff μS, with #trials trials (#runs evaluations)", 
+	[Math.round(stats.mean(samples)), 
+	stats.median(samples),
 	samples.length,
+	sample_cut,
 	options.cutoff,
+	trials * options.runs,
 	options.runs]);
 
 	plot.plot(plots, getLayout(title));
