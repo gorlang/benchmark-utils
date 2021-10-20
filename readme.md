@@ -9,14 +9,14 @@ const f = your_function // function name wihtout ()
 const args = [a, b, etc.] // Array with the args for your your_function
 
 const trials = 100 // the number of trials
-const options = null // optional, se below for properties.
+const options = null // optional, see below for properties.
 ```
 
 Create a new file 'my-benchmark.js' and add:
 
 ```js
 
-const f = your_function // the function to test without ()
+const f = your_function // the function (name) to test without ()
 const args = [a, b, etc.] // args to the function
 histogram(f, args); // default usage, displays histogram with benchmark result in new browser window
 
@@ -49,11 +49,10 @@ const options = {
     histnorm: 'count', // what to display on y-axis ['count'|'probability'] 
     binsize: 5, // width of x-bins in chart
     showstd: false, // display standard deviation markers
-    theme: 'light' // ['dark'|'light']*
+    theme: 'dark' // ['dark'|'light']
   }
 ```
-
-*If using the dark theme you might want to add 'body {background-color: #000;},' to the style-tag in file node_modules/nodeplotlib/dist/www/index.html to change the page background color.
+Note: If using the dark theme you might want to add 'body {background-color: #000;},' to the style-tag in file: ./node_modules/nodeplotlib/dist/www/index.html to change the page background color.
 
 ## Installation
 
