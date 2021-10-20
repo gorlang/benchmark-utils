@@ -5,11 +5,11 @@ const benchmark = (function(){
 
 function btime(f, args, trial_i) {
   	
-  	const hrTime = process.hrtime();
-  	const start = hrTime[0] * 1000000 + parseInt(hrTime[1] / 1000);
-  	const res = (f ? (args ? f(...args) : f()) : null);
-  	const hrTimeEnd = process.hrtime();
-  	const end = hrTimeEnd[0] * 1000000 + parseInt(hrTimeEnd[1] / 1000);
+	const hrTime = process.hrtime();
+	const start = hrTime[0] * 1000000 + parseInt(hrTime[1] / 1000);
+	const res = (f ? (args ? f(...args) : f()) : null);
+	const hrTimeEnd = process.hrtime();
+	const end = hrTimeEnd[0] * 1000000 + parseInt(hrTimeEnd[1] / 1000);
 	return {res: (trial_i == 0 ? res : null), t: Math.round(end - start), unit: "uS"};
 }
 
@@ -43,7 +43,7 @@ function getOptions() {
 function setGetOptions(opts) {
 	const options = getOptions();
 	for (const property in opts) {
- 		options[property] = opts[property];
+		options[property] = opts[property];
 	}
 	return options;
 }
@@ -53,23 +53,24 @@ function getChartName(options) {
 }
 
 function getLayout(title, options) {
-  return {
-    bargap: 0.01,
-    bargroupgap: 0.2,
-    barmode: "overlay",
-    title: title,
-    xaxis: {title: "Time (μS)"}, 
-    yaxis: {title: getChartName(options)},
-  }
+
+	return {
+		bargap: 0.01,
+		bargroupgap: 0.2,
+		barmode: "overlay",
+		title: title,
+		xaxis: {title: "Time (μS)"}, 
+		yaxis: {title: getChartName(options)},
+	}
 }
 
 function setTheme(layout, theme) {
 
 	if (theme == 'dark') {
 		const dark = {
-			paper_bgcolor: "rgba(0,0,0)",
-    		plot_bgcolor: "rgba(0,0,0)",
-    		font: { color: "#fff", size: 12},
+			paper_bgcolor: "#222",
+			plot_bgcolor: "#222",
+			font: { color: "#fff", size: 12},
 		};
 		for (const property in dark) {
 			layout[property] = dark[property];
@@ -80,9 +81,9 @@ function setTheme(layout, theme) {
 
 function getLine(x, name="", y=0.05) {
 	return {x: [x, x],
-	  y: [0, y],
-	  type: 'line',
-	  name: name
+		y: [0, y],
+		type: 'line',
+		name: name
 	}
 }
 
