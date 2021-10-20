@@ -33,8 +33,10 @@ function getOptions() {
     runs: 10,
     cutoff: 200,
     range: [0, 200],
-    histnorm: 'count',  // ['count'|'probability'] 
+    histnorm: 'probability',  // ['count'|'probability'] 
     binsize: 5,
+    showstd: false,
+    theme: 'dark', // ['light'|'dark']
   }
 }
 
@@ -46,21 +48,67 @@ function setGetOptions(opts) {
 	return options;
 }
 
-function getLayout(title) {
+function getChartName(options) {
+	return (options.histnorm == 'probability' ? 'Probability' : 'Count')
+}
+
+function getLayout(title, options) {
   return {
     bargap: 0.01,
     bargroupgap: 0.2,
     barmode: "overlay",
     title: title,
     xaxis: {title: "Time (μS)"}, 
-    yaxis: {title: "Samples"},
+    yaxis: {title: getChartName(options)},
   }
+}
+
+function setTheme(layout, theme) {
+
+	if (theme == 'dark') {
+		const dark = {
+			paper_bgcolor: "rgba(0,0,0)",
+    		plot_bgcolor: "rgba(0,0,0)",
+    		font: { color: "#fff", size: 12},
+		};
+		for (const property in dark) {
+			layout[property] = dark[property];
+		}
+	}
+	return layout;
+}
+
+function getLine(x, name="", y=0.05) {
+	return {x: [x, x],
+	  y: [0, y],
+	  type: 'line',
+	  name: name
+	}
+}
+
+function addStd(plots, samples, mean) {
+	const std = stats.standardDeviation(samples);
+	plots.push(getLine(mean + std, "+σ"));
+	plots.push(getLine(mean - std, "-σ"));
+}
+
+function getTitle(options, samples, mean, trials) {
+
+	const sample_cut = Math.round(samples.length/(options.runs * trials) * 100);
+	return decorate(
+	"x̄=#mean μS, #samples samples (#sample_cut %) < #cutoff μS (#trials trials, #runs evaluations)", 
+	[Math.round(mean), 
+	samples.length,
+	sample_cut,
+	options.cutoff,
+	trials * options.runs,
+	options.runs]);
 }
 
 exports.benchmark = function benchmark(f, args=null, trials=1) {
 	
 	const btimes = [];
-	for (var j=0;j<trials;j++) {
+	for (let j=0;j<trials;j++) {
 		btimes.push(btime(f, args, j));
 	}
 	const times = btimes.map(item=>item.t);
@@ -73,18 +121,18 @@ exports.histogram = function histogram(f, args, trials=100, opts=null) {
 	const options = (opts == null ? getOptions() : setGetOptions(opts));
 	const output = [];
 
-	for(var i = 1; i <= options.runs; i++) {
+	for(let i = 1; i <= options.runs; i++) {
 	  output.push(
 	      exports.benchmark(f, args, trials).times
 	      .filter(x => x < options.cutoff));
 	}
 
 	const samples = output.flat();
-	const sample_cut = Math.round(samples.length/(options.runs * trials) * 100);
 	const plots = [];
 	plots.push(
 	  {x: samples, 
 	  type: 'histogram',
+	  name: getChartName(options),
 	  histnorm: options.histnorm,
 	  xbins: {end: options.range[1],
 	          size: options.binsize, 
@@ -92,17 +140,14 @@ exports.histogram = function histogram(f, args, trials=100, opts=null) {
 	          },
 	});
 
-	const title = decorate(
-	"x̄=#mean μS (M=#median μS), #samples samples (#sample_cut %) < #cutoff μS, with #trials trials (#runs evaluations)", 
-	[Math.round(stats.mean(samples)), 
-	stats.median(samples),
-	samples.length,
-	sample_cut,
-	options.cutoff,
-	trials * options.runs,
-	options.runs]);
+	const mean = stats.mean(samples);
+	plots.push(getLine(mean, "x̄"));
+	if (options.showstd) {
+		addStd(plots, samples, mean);
+	}
 
-	plot.plot(plots, getLayout(title));
+	const title = getTitle(options, samples, mean, trials);
+	plot.plot(plots, setTheme(getLayout(title, options), options.theme));
 }
 
 exports.benchmark_log = function benchmark_log(f, args=null, trials=1) {
